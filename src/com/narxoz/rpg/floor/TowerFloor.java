@@ -108,5 +108,5 @@ public abstract class TowerFloor {
      *
      * @return the floor's name
      */
-    protected abstract String getFloorName();
+    public abstract String getFloorName();
 }

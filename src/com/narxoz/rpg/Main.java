@@ -1,17 +1,45 @@
 package com.narxoz.rpg;
+import com.narxoz.rpg.combatant.Hero;
+import com.narxoz.rpg.floor.*;
+import com.narxoz.rpg.state.PoisonedState;
+import com.narxoz.rpg.state.StunnedState;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Entry point for Homework 8 — The Haunted Tower: Ascending the Floors.
- *
- * Build your heroes, floors, tower runner, and execute the climb here.
- */
 public class Main {
 
     public static void main(String[] args) {
-        // TODO (student): Create at least 2 heroes with different starting states
-        // TODO (student): Create a sequence of ≥ 4 floors using ≥ 3 distinct floor subclasses
-        // TODO (student): Instantiate a tower runner and execute the tower climb
-        // TODO (student): Track and print results (floors cleared, heroes surviving, tower status)
-        // TODO (student): Demonstrate visible state transitions in the output
+        // 1. Создаем героев
+        List<Hero> party = new ArrayList<>();
+        Hero knight = new Hero("Alisher", 100, 20, 10);
+        knight.setState(new PoisonedState()); // Басында уланған
+        party.add(knight);
+
+        // 2. Создаем этажи башни
+        List<TowerFloor> tower = new ArrayList<>();
+        tower.add(new BattleFloor());
+        tower.add(new RestFloor());
+        tower.add(new BattleFloor()); // Екінші шайқас
+
+        // 3. Запуск приключения
+        int clearedCount = 0;
+        for (TowerFloor floor : tower) {
+            // State Lifecycle
+            party.forEach(h -> h.getState().onTurnStart(h));
+
+            FloorResult res = floor.explore(party);
+
+            party.forEach(h -> h.getState().onTurnEnd(h));
+
+            if (res.isCleared()) {
+                clearedCount++;
+                System.out.println("Floor Result: " + res.getSummary());
+            } else {
+                System.out.println("Game Over on floor " + floor.getFloorName());
+                break;
+            }
+        }
+
+        System.out.println("\nTotal floors cleared: " + clearedCount);
     }
 }
